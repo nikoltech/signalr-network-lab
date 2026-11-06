@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+    <input id="user" placeholder="Ім'я">
+    <input id="room" placeholder="Кімната"> <button id="join">Увійти</button><br>
+    <input id="text" placeholder="Повідомлення">
+    <button id="toRoom">У кімнату</button>
+    <button id="toOthers">Усім іншим</button>
+    <ul id="log"></ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    <script>
+    const $ = id => document.getElementById(id);
+    const log = t => $("log").insertAdjacentHTML("beforeend", `<li>${t}</li>`);
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("/chatHub", { transport: signalR.HttpTransportType.LongPolling })
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
+
+    connection.on("Receive", (user, text) => log(`<b>${user}</b>: ${text}`));
+    connection.on("System", text => log(`<i>${text}</i>`));
+
+    connection.onreconnecting(() => log("<i>Зв'язок втрачено, перепідключаюсь...</i>"));
+    connection.onreconnected(id => log(`<i>Перепідключено, новий ConnectionId: ${id}</i>`));
+
+    $("join").onclick = () => connection.invoke("JoinRoom", $("room").value);
+    $("toRoom").onclick = () => connection.invoke("SendToRoom", $("room").value, $("user").value, $("text").value);
+    $("toOthers").onclick = () => connection.invoke("SendToOthers", $("user").value, $("text").value);
+
+    connection.start().catch(err => log(`Помилка: ${err}`));
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+## .NET
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+publish/
+*.user
+*.suo
+*.log
+*.nupkg
+TestResults/
+
+## Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/
+*.swp
+
+## Local settings and secrets
+appsettings.*.local.json
+appsettings.Local.json
+secrets.json
+.env
+.env.*
+*.pfx
+*.key
+*.pem
+
+## OS
+.DS_Store
+Thumbs.db
